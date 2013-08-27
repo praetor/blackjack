@@ -56,7 +56,7 @@ Function CheckDetection()
 		detectedBy = false
 	endif
 	
-	Debug.Notification(target.GetActorBase().GetName() + " detected victim: " + detectedBy)
+	; Debug.Notification(target.GetActorBase().GetName() + " detected victim: " + detectedBy)
 	
 	bool playerSendAlarm = (Game.GetPlayer().IsWeaponDrawn() && (Game.GetPlayer().GetEquippedWeapon(true) == Blackjack || Game.GetPlayer().GetEquippedWeapon(false) == Blackjack)) || Game.GetPlayer().IsTrespassing()
 	if detectedBy && Game.GetPlayer().IsDetectedBy(target) && playerSendAlarm

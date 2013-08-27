@@ -53,7 +53,7 @@ Event OnUpdate()
 	endif
 EndEvent
 
-Event OnDeath(Actor akKiller)
+Event OnDying(Actor akKiller)
 	UnregisterForUpdate()
 	Dispel()
 EndEvent
