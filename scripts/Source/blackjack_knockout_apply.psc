@@ -7,6 +7,10 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		akTarget.RemoveSpell(KnockoutSpell)
 	endif
 	
+	akCaster.IsDetectedBy(akTarget)
+	
+	Utility.Wait(0.25)
+	
 	if akCaster.IsDetectedBy(akTarget)
 		akTarget.SendAssaultAlarm()
 	else
