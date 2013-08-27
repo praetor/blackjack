@@ -9,11 +9,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	
 	akCaster.IsDetectedBy(akTarget)
 	
-	Utility.Wait(0.25)
+	Utility.Wait(0.1)
 	
-	if akCaster.IsDetectedBy(akTarget)
-		akTarget.SendAssaultAlarm()
-	else
+	; if akCaster.IsDetectedBy(akTarget)
+	;	akTarget.SendAssaultAlarm()
+	;else
+		akCaster.PushActorAway(akTarget, 2)
+		Utility.Wait(0.5)
 		akTarget.AddSpell(KnockoutSpell)
-	endif
+	;endif
 EndEvent
