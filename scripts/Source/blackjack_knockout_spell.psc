@@ -1,6 +1,7 @@
 Scriptname blackjack_knockout_spell extends activemagiceffect
 
 float Property Duration Auto
+Spell Property DetectCloak Auto
 
 float targetTime = 0.0
 
@@ -24,6 +25,10 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			akTarget.SetAV("Paralysis", 1)
 			akTarget.SetUnconscious(true)
 			akTarget.SetNotShowOnStealthMeter(true)
+			if akTarget.HasSpell(DetectCloak)
+				akTarget.RemoveSpell(DetectCloak)
+			endif
+			akTarget.AddSpell(DetectCloak)
 			targetTime = Utility.GetCurrentGameTime() + Duration
 			
 			Debug.Notification("Now: " + Utility.GetCurrentGameTime() + " Then: " + targetTime)
@@ -34,10 +39,11 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-	Debug.Notification("Removing")
+	; Debug.Notification("Removing")
 	akTarget.SetAV("Paralysis", 0)
 	akTarget.SetUnconscious(false)
 	akTarget.SetNotShowOnStealthMeter(false)
+	akTarget.RemoveSpell(DetectCloak)
 EndEvent
 
 Event OnUpdate()
@@ -45,4 +51,18 @@ Event OnUpdate()
 		UnregisterForUpdate()
 		Dispel()
 	endif
+EndEvent
+
+Event OnDeath(Actor akKiller)
+	UnregisterForUpdate()
+	Dispel()
+EndEvent
+
+Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	if akAggressor == Game.GetPlayer()
+		GetTargetActor().SendAssaultAlarm()
+	endif
+	
+	UnregisterForUpdate()
+	Dispel()
 EndEvent
