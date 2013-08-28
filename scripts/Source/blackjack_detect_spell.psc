@@ -23,7 +23,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		Dispel()
 	else
 		CheckDetection()
-		RegisterForUpdate(3.0)
+		RegisterForUpdate(1.0)
 	endif
 EndEvent
 
