@@ -1,6 +1,7 @@
 Scriptname blackjack_knockout_spell extends activemagiceffect
 
-float Property Duration Auto
+float Property DurationMin Auto
+float Property DurationMax Auto
 Spell Property DetectCloak Auto
 
 float targetTime = 0.0
@@ -29,7 +30,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 				akTarget.RemoveSpell(DetectCloak)
 			endif
 			akTarget.AddSpell(DetectCloak)
-			targetTime = Utility.GetCurrentGameTime() + Duration
+			targetTime = Utility.GetCurrentGameTime() + Utility.RandomFloat(DurationMin, DurationMax)
 			
 			Debug.Notification("Now: " + Utility.GetCurrentGameTime() + " Then: " + targetTime)
 			
