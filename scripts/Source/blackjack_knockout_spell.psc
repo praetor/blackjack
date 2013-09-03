@@ -5,6 +5,7 @@ float Property DurationMax Auto
 Spell Property DetectCloak Auto
 
 float targetTime = 0.0
+Actor tempActor = None
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
 	bool detectedBy = akCaster.IsDetectedBy(akTarget)
@@ -23,24 +24,35 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		
 			Utility.Wait(0.5)
 			
+			tempActor = akTarget.PlaceActorAtMe(akTarget.GetActorBase(), 4, None)
+			tempActor.SetAlpha(0.0, false)
+			tempActor.KillEssential(None)
+			tempActor.BlockActivation(true)
+			
 			akTarget.SetAV("Paralysis", 1)
 			akTarget.SetUnconscious(true)
 			akTarget.SetNotShowOnStealthMeter(true)
 			if akTarget.HasSpell(DetectCloak)
 				akTarget.RemoveSpell(DetectCloak)
 			endif
-			akTarget.AddSpell(DetectCloak)
+			akTarget.AddSpell(DetectCloak, false)
+			
 			targetTime = Utility.GetCurrentGameTime() + Utility.RandomFloat(DurationMin, DurationMax)
 			
-			Debug.Notification("Now: " + Utility.GetCurrentGameTime() + " Then: " + targetTime)
+			; Debug.Notification("Now: " + Utility.GetCurrentGameTime() + " Then: " + targetTime)
 			
-			RegisterForUpdate(5.0)
+			RegisterForUpdate(1.0)
 		endif
 	endif
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	; Debug.Notification("Removing")
+	if tempActor != None
+		tempActor.Delete()
+		tempActor = None
+	endif
+	
 	akTarget.SetAV("Paralysis", 0)
 	akTarget.SetUnconscious(false)
 	akTarget.SetNotShowOnStealthMeter(false)
@@ -51,6 +63,11 @@ Event OnUpdate()
 	if Utility.GetCurrentGameTime() >= targetTime
 		UnregisterForUpdate()
 		Dispel()
+	endif
+	
+	if tempActor != None
+		tempActor.ForceRemoveRagdollFromWorld()
+		tempActor.MoveTo(GetTargetActor(), 0.0, 0.0, 0.0, true)
 	endif
 EndEvent
 

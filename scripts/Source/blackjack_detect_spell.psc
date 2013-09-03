@@ -2,11 +2,9 @@ Scriptname blackjack_detect_spell extends activemagiceffect
 
 Keyword[] Property ValidRaceKeywords Auto
 Weapon Property Blackjack Auto
-
-bool madeAlert = false 
+float Property AttackRange Auto
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
-	madeAlert = false
 	bool canAdd = false
 	int i = 0
 	while i < ValidRaceKeywords.Length
@@ -23,15 +21,11 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		Dispel()
 	else
 		CheckDetection()
-		RegisterForUpdate(1.0)
+		RegisterForUpdate(8.0)
 	endif
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-	; Debug.Notification("    Done detecting: " + akTarget.GetActorBase().GetName())
-	if madeAlert
-		akTarget.SetAlert(false)
-	endif
 EndEvent
 
 Event OnDying(Actor akKiller)
@@ -39,7 +33,12 @@ Event OnDying(Actor akKiller)
 EndEvent
 
 Event OnUpdate()
-	CheckDetection()
+	if GetCasterActor() == None
+		UnregisterForUpdate()
+		Dispel()
+	else
+		CheckDetection()
+	endif
 EndEvent
 
 Function CheckDetection()
@@ -56,22 +55,15 @@ Function CheckDetection()
 		detectedBy = false
 	endif
 	
-	; Debug.Notification(target.GetActorBase().GetName() + " detected victim: " + detectedBy)
-	
+	float dist = Game.GetPlayer().GetDistance(caster)
 	bool playerSendAlarm = (Game.GetPlayer().IsWeaponDrawn() && (Game.GetPlayer().GetEquippedWeapon(true) == Blackjack || Game.GetPlayer().GetEquippedWeapon(false) == Blackjack)) || Game.GetPlayer().IsTrespassing()
-	if detectedBy && Game.GetPlayer().IsDetectedBy(target) && playerSendAlarm
+	if detectedBy && Game.GetPlayer().IsDetectedBy(target) && playerSendAlarm && dist <= AttackRange
 		target.SendAssaultAlarm()
-	elseif detectedBy
-		if !target.IsAlerted()
-			target.SetAlert(true)
-			madeAlert = true
-		endif
 	endif
 EndFunction
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	if aeCombatState != 0
-		madeAlert = false
 		Dispel()
 	endif
 EndEvent
