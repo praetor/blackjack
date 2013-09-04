@@ -13,7 +13,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		hasAlerted = true
 	endif
 	
-	Debug.Notification(akTarget.GetActorBase().GetName() + " is suspicious")
+	;Debug.Notification(akTarget.GetActorBase().GetName() + " is suspicious")
 
 	SuspectPlayer()
 	
@@ -23,7 +23,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-	Debug.Notification(akTarget.GetActorBase().GetName() + " not suspicious")
+	;Debug.Notification(akTarget.GetActorBase().GetName() + " not suspicious")
 	
 	if hasAlerted
 		akTarget.SetAlert(false)

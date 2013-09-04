@@ -29,6 +29,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			tempActor.SetAlpha(0.0, false)
 			tempActor.KillEssential(None)
 			tempActor.BlockActivation(true)
+			tempActor.SetScale(0.1)
 			
 			akTarget.SetAV("Paralysis", 1)
 			akTarget.SetUnconscious(true)
@@ -78,7 +79,7 @@ Event OnUpdate()
 	
 	if tempActor != None
 		tempActor.ForceRemoveRagdollFromWorld()
-		tempActor.MoveTo(GetTargetActor(), 0.0, 0.0, 0.0, true)
+		tempActor.MoveTo(GetTargetActor(), 0.0, 0.0, -5.0, true)
 	endif
 EndEvent
 
