@@ -3,6 +3,7 @@ Scriptname blackjack_knockout_spell extends activemagiceffect
 float Property DurationMin Auto
 float Property DurationMax Auto
 Spell Property DetectCloak Auto
+Spell Property SuspectAbility Auto
 
 float targetTime = 0.0
 Actor tempActor = None
@@ -36,6 +37,9 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 				akTarget.RemoveSpell(DetectCloak)
 			endif
 			akTarget.AddSpell(DetectCloak, false)
+			if akTarget.HasSpell(SuspectAbility)
+				akTarget.RemoveSpell(SuspectAbility)
+			endif
 			
 			targetTime = Utility.GetCurrentGameTime() + Utility.RandomFloat(DurationMin, DurationMax)
 			
@@ -57,6 +61,13 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	akTarget.SetUnconscious(false)
 	akTarget.SetNotShowOnStealthMeter(false)
 	akTarget.RemoveSpell(DetectCloak)
+	
+	if akTarget.HasSpell(SuspectAbility)
+		akTarget.RemoveSpell(SuspectAbility)
+	endif
+	if !akTarget.IsDead()
+		akTarget.AddSpell(SuspectAbility, false)
+	endif
 EndEvent
 
 Event OnUpdate()
@@ -78,7 +89,18 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	if akAggressor == Game.GetPlayer()
-		GetTargetActor().SendAssaultAlarm()
+		float attackChance = 50.0
+		if GetTargetActor().GetFactionReaction(Game.GetPlayer()) == 3 || GetTargetActor().GetRelationshipRank(Game.GetPlayer()) >= 3
+			attackChance = 0.0
+		elseif GetTargetActor().GetFactionReaction(Game.GetPlayer()) == 2 || GetTargetActor().GetRelationshipRank(Game.GetPlayer()) >= 1
+			attackChance = 15.0
+		elseif GetTargetActor().GetRelationshipRank(Game.GetPlayer()) == 0
+			attackChance = 25.0
+		endif
+		
+		if Utility.RandomFloat(0, 100) < attackChance
+			GetTargetActor().SendAssaultAlarm()
+		endif
 	endif
 	
 	UnregisterForUpdate()
